@@ -1,0 +1,104 @@
+﻿@model IEnumerable<AlivelyMVC.Models.Task>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+ <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+ <br />
+ @if(Model.Count() != 0)
+{
+    <h4 class="text-primary">Tasks: (@Model.Count())</h4>
+    <div id="carouselExampleControls" class="carousel" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        @foreach (var task in @Model)
+        {
+            <div class="carousel-item active">
+            <div class="card mx-auto" style="width: 20rem;">
+                <div class="card-body">
+                    <h5 class="card-title">@task.Title</h5>
+                    <p class="card-text">
+                        Objective: @task.Objective
+                        <br/> 
+                        Relevance: @task.Relevance
+                        <br>
+                        Importance: @task.Value
+                    </p>
+                   <input class="form-check-input" asp-for="@task.Completed" disabled/> Completed
+                    <br/>
+                     <a class="btn btn-primary" asp-controller="Tasks" asp-action="Edit" asp-route-id="@task.Id" ><i class="bi bi-pencil"></i> &nbsp;Edit</a>
+                </div>
+               
+            </div>
+        </div>
+        }
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+    </div>
+}
+else
+{
+    <h2 class="text-primary">No Tasks!</h2>
+}
+
+
+<style>
+
+    .carousel-inner {
+    display: flex;
+    padding: 1em;
+  }
+  .carousel-item {
+    margin-right: 0;
+    flex: 0 0 33.333333%;
+    display: block;
+  }
+.card {
+  margin: 0 0.5em;
+  box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);
+  border: none;
+  width:  20rem;
+}
+.carousel-control-prev,
+.carousel-control-next {
+  background-color: #e1e1e1;
+  width: 6vh;
+  height: 6vh;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+</style>
+<script>
+    var multipleCardCarousel = document.querySelector(
+  "#carouselExampleControls"
+);
+  var carousel = new bootstrap.Carousel(multipleCardCarousel, {
+    interval: false,
+  });
+  var carouselWidth = $(".carousel-inner")[0].scrollWidth;
+  var cardWidth = $(".carousel-item").width();
+  var scrollPosition = 0;
+  $("#carouselExampleControls .carousel-control-next").on("click", function () {
+    if (scrollPosition < carouselWidth - cardWidth * 4) {
+      scrollPosition += cardWidth;
+      $("#carouselExampleControls .carousel-inner").animate(
+        { scrollLeft: scrollPosition },
+        600
+      );
+    }
+  });
+  $("#carouselExampleControls .carousel-control-prev").on("click", function () {
+    if (scrollPosition > 0) {
+      scrollPosition -= cardWidth;
+      $("#carouselExampleControls .carousel-inner").animate(
+        { scrollLeft: scrollPosition },
+        600
+      );
+    }
+  });
+</script>

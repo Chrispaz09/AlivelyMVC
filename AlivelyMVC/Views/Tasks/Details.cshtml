@@ -1,0 +1,61 @@
+﻿@model AlivelyMVC.Models.Task
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="border p-3 mt-4">
+<h1 class="text-primary">Task Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+           Title:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            Objective:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Objective)
+        </dd>
+        <dt class = "col-sm-2">
+           Relevance:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Relevance)
+        </dd>
+        <dt class = "col-sm-2">
+           Value:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Value)
+        </dd>
+        <dt class = "col-sm-2">
+            Deadline:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Deadline)
+        </dd>
+        <dt class = "col-sm-2">
+           Created Date:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+        <dt class = "col-sm-2">
+            Completed: 
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Completed)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id"><i class="bi bi-pencil"></i> &nbsp;Edit</a> 
+    <a class="btn btn-primary" asp-action="Index"><i class="bi bi-arrow-return-left"></i>&nbsp; Go Back</a>
+</div>
+</div>

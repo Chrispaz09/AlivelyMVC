@@ -1,0 +1,58 @@
+﻿@model List<SMARTGoal>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">SMART Goals</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="SMARTGoals" asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> &nbsp; Create New Goal</a>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th>
+                Goal
+            </th>
+            <th>
+                Time Box
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var goal in Model)
+        {
+            <tr>
+                <td width="50%">
+                    @goal.Target
+                </td>
+                <td width="50%">
+                    @goal.AchieveDate.ToShortDateString()
+                </td>
+                <td>
+                    <div class="w-75 btn-group" role="group">
+                        <a class="btn btn-primary" asp-controller="SMARTGoals" asp-action="Update" asp-route-id="@goal.Id"><i class="bi bi-pencil"></i> &nbsp; Edit</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="w-75 btn-group" role="group">
+                       <a class="btn btn-primary" asp-action="Details" asp-route-id="@goal.Id"><i class="bi bi-card-list"></i> &nbsp; Details</a> 
+                    </div>
+                </td>
+
+                <td>
+                    <div class="w-75 btn-group" role="group">
+                        <a class="btn btn-danger" type="submit" asp-controller="SMARTGoals" asp-action="Delete" asp-route-id="@goal.Id"  style="width: fit-content;" ><i class="bi bi-trash"></i> &nbsp; Delete </a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

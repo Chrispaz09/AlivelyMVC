@@ -1,0 +1,49 @@
+﻿@model SMARTGoal
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<form method="post">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">
+                Edit SMART Goal
+            </h2>
+        </div>
+        <div class="form-group">
+          <label for="specific-goal" class="form-label mt-4">Specify the goal:</label>
+          <input type="text" class="form-control" id="specific-goal" asp-for="Target" placeholder="State what you'll do...">
+          <span asp-validation-for="Target" class="text-danger" ></span>
+        </div>
+       <div class="form-group">
+          <label for="measurable-goal" class="form-label mt-4">How will it be measured?:</label>
+          <input type="text" class="form-control" id="measurable-goal" asp-for="Measure" placeholder="Provide a way to evaluate...">
+          <span asp-validation-for="Measure" class="text-danger" ></span>
+        </div>
+       <div class="form-group">
+          <label for="relevent-goal" class="form-label mt-4">How is it achievable?:</label>
+          <input type="text" class="form-control" id="relevent-goal" asp-for="Plan" placeholder="Ask if it's within your scope...">
+          <span asp-validation-for="Plan" class="text-danger" ></span>
+        </div>
+         <div class="form-group">
+          <label for="relevant-goal" class="form-label mt-4">How is it relevant?:</label>
+          <input type="text" class="form-control" id="relevant-goal" asp-for="Execution" placeholder="Ask if it's relevant to your life...">
+          <span asp-validation-for="Execution" class="text-danger" ></span>
+        </div>
+         <div class="form-group">
+          <label for="timebound-goal" class="form-label mt-4">What is your target date?:</label>
+          <input type="date" class="form-control" id="timebound-goal" asp-for="AchieveDate" placeholder="Choose a realistic time-frame of when you should achieve it...">
+          <span asp-validation-for="AchieveDate" class="text-danger" ></span>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary" style="width: fit-content;"><i class="bi bi-save"></i> Save</button>
+        <a asp-controller="SMARTGoals" asp-action="Index" class="btn btn-primary" style="width: fit-content;" ><i class="bi bi-arrow-return-left"></i> Go Back </a>
+    </div>
+</form>
+    
+@section Scripts
+{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

@@ -1,0 +1,30 @@
+﻿@model SMARTGoal
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+
+<div class="border p-3 mt-4">
+    <div class="container">
+        <div class="row">
+            <div>
+                <div class="project-info-box mt-0">
+                    <div class="row pb-2">
+                        <h2 class="text-primary">
+                            Goal Details
+                        </h2>
+                    </div>
+                    <hr />
+                </div>
+                <p><b>Goal:</b>@Model.Target</p>
+                <p><b>Measure:</b>@Model.Measure</p>
+                <p><b>How it is achievable: </b>@Model.Plan</p>
+                <p><b>How it is relevant to me:</b> @Model.Execution</p>
+                <p><b>Target date:</b> @Model.AchieveDate</p>
+
+                <p>
+                    <partial name="_TaskCarousel" model="@Model.Tasks" />
+                </p>
+            </div><!-- / column -->
+
+        </div>
+    </div>
+</div>
