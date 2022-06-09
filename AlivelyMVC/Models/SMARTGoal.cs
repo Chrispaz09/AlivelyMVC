@@ -8,6 +8,8 @@ namespace AlivelyMVC.Models
         [Key]
         public int Id { get; set; }
 
+        public Guid Uuid { get; set; } = Guid.NewGuid();
+
         [Required]
         [Display(Name = "specify")]
         public string Target { get; set; }

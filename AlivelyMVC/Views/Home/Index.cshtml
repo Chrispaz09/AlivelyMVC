@@ -5,62 +5,63 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
 
 <br />
-
-<div class="col-md-10 ">
-    <div class="row ">
-        <div class="col-xl-3 col-lg-6">
-            <div class="card">
-                <div class="card-statistic-3 p-4">
-                    <div class="mb-4">
-                        <h4 class="card-title mb-0">All SMART Goals</h4>
-                    </div>
-                    Total: @Model.SMARTGoals.Count()
-                    <br />
-                    Overdue:@Model.GoalsOverdue.Count()
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-lg-6">
-            <div class="card">
-                <div class="card-statistic-3 p-4">
-                    <div class="card-icon card-icon-large"></div>
-                    <div class="mb-4">
-                        <h4 class="card-title mb-0">All Tasks</h4>
-                    </div>
-                    Total: @Model.Tasks.Count()
-                    <br />
-                    Complete: @Model.CompletedTasks.Count() / @Model.Tasks.Count()
-                    <br />
-                    Incomplete: @Model.IncompleteTasks.Count() / @Model.Tasks.Count()
-
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-lg-6">
-            <div class="card">
-                @if(@Model.NextNearestGoal is not null)
-                {
+@if (@Model is not null)
+{
+    <div class="col-md-10 ">
+        <div class="row ">
+            <div class="col-xl-3 col-lg-6">
+                <div class="card">
                     <div class="card-statistic-3 p-4">
-                    <div class="mb-4">
-                        <h4 class="card-title mb-0">Next Nearest Goal</h4>
-                        <h5>Deadline: @Model.NextNearestGoal.AchieveDate.ToShortDateString()</h5>
+                        <div class="mb-4">
+                            <h4 class="card-title mb-0">All SMART Goals</h4>
+                        </div>
+                        Total: @Model.SMARTGoals.Count()
+                        <br />
+                        Overdue:@Model.GoalsOverdue.Count()
                     </div>
-
-                    Goal: @Model.NextNearestGoal.Target
-                    <br />
-                    Number of Tasks: @Model.NextNearestGoal.Tasks.Count()
-                    <br />
-                    Tasks completed: @Model.NextNearestGoal.Tasks.Where(tasks => tasks.Completed == true).Count() / @Model.NextNearestGoal.Tasks.Count
-                    <br>
-                    Tasks incomplete: @Model.NextNearestGoal.Tasks.Where(tasks => tasks.Completed == false).Count() / @Model.NextNearestGoal.Tasks.Count
                 </div>
-                }
             </div>
+            <div class="col-xl-3 col-lg-6">
+                <div class="card">
+                    <div class="card-statistic-3 p-4">
+                        <div class="card-icon card-icon-large"></div>
+                        <div class="mb-4">
+                            <h4 class="card-title mb-0">All Tasks</h4>
+                        </div>
+                        Total: @Model.Tasks.Count()
+                        <br />
+                        Complete: @Model.CompletedTasks.Count() / @Model.Tasks.Count()
+                        <br />
+                        Incomplete: @Model.IncompleteTasks.Count() / @Model.Tasks.Count()
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6">
+                <div class="card">
+                    @if (@Model.NextNearestGoal is not null && @Model.NextNearestGoal.Tasks is not null)
+                    {
+                        <div class="card-statistic-3 p-4">
+                            <div class="mb-4">
+                                <h4 class="card-title mb-0">Next Nearest Goal</h4>
+                                <h5>Deadline: @Model.NextNearestGoal.AchieveDate.ToShortDateString()</h5>
+                            </div>
+
+                            Goal: @Model.NextNearestGoal.Target
+                            <br />
+                            Number of Tasks: @Model.NextNearestGoal.Tasks.Count()
+                            <br />
+                            Tasks completed: @Model.NextNearestGoal.Tasks.Where(tasks => tasks.Completed == true).Count() / @Model.NextNearestGoal.Tasks.Count
+                            <br>
+                            Tasks incomplete: @Model.NextNearestGoal.Tasks.Where(tasks => tasks.Completed == false).Count() / @Model.NextNearestGoal.Tasks.Count
+                        </div>
+                    }
+                </div>
+            </div>
+
         </div>
-
     </div>
-</div>
-
+}
 <style>
     .card {
         background-color: #fff;
