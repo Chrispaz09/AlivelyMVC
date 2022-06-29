@@ -1,5 +1,7 @@
 ﻿using AlivelyMVC.Data;
 using AlivelyMVC.Models;
+using AlivelyMVC.ViewModels;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,16 +10,20 @@ namespace AlivelyMVC.Controllers
     //Controller not Scaffolded.
     public class SmartGoals : Controller
     {
+        public readonly IMapper _mapper;
+
         private readonly AlivelyDbContext _alivelyDbContext;
 
-        public SmartGoals(AlivelyDbContext alivelyDbContext)
+        public SmartGoals(IMapper mapper, AlivelyDbContext alivelyDbContext)
         {
+            _mapper = mapper;
+
             _alivelyDbContext = alivelyDbContext;
         }
 
         public IActionResult Index()
         {
-            var goalList = _alivelyDbContext.SMARTGoals.ToList();
+            var goalList = _alivelyDbContext.SMARTGoals.Where(users => users.UserUuid == Guid.Parse(HttpContext.Session.GetString("CurrentUserUuid"))).ToList();
 
             return View(goalList);
         }
@@ -29,13 +35,23 @@ namespace AlivelyMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SMARTGoal smartGoal)
+        public async Task<IActionResult> Create(SMARTGoalViewModel smartGoalViewModel)
         {
+            var smartGoal = _mapper.Map<SMARTGoal>(smartGoalViewModel);
+
+            smartGoal.Uuid = Guid.NewGuid();
+
+            smartGoal.UserUuid = Guid.Parse(HttpContext.Session.GetString("CurrentUserUuid"));
+
+            HttpContext.Session.SetString("CurrentSMARTGoalUuid", smartGoal.Uuid.ToString());
+
             var addedSMARTGoal = await _alivelyDbContext.SMARTGoals.AddAsync(smartGoal);
 
             await _alivelyDbContext.SaveChangesAsync();
+
             TempData["Success"] = "SMART Goal created successfully!";
-            return RedirectToAction("Create", "Tasks", addedSMARTGoal.Entity);
+
+            return RedirectToAction("Create", "Tasks");
         }
 
         public IActionResult Update(int id)
@@ -59,7 +75,11 @@ namespace AlivelyMVC.Controllers
                 _alivelyDbContext.SMARTGoals.Update(smartGoal);
 
                 await _alivelyDbContext.SaveChangesAsync();
+
                 TempData["Success"] = "SMART Goal updated successfully!";
+
+                HttpContext.Session.SetString("CurrentUserUuid", smartGoal.UserUuid.ToString());
+
                 return RedirectToAction("Index");   
             }
 

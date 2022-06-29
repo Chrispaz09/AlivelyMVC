@@ -7,37 +7,55 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AlivelyMVC.Data;
 using AlivelyMVC.Models;
+using AlivelyMVC.ViewModels;
+using AutoMapper;
+using Task = AlivelyMVC.Models.Task;
+using Ardalis.GuardClauses;
 
 namespace AlivelyMVC.Controllers
 {
     //Controller Scaffolded.
     public class TasksController : Controller
     {
+        private readonly IMapper _mapper;
+
         private readonly AlivelyDbContext _context;
 
-        public TasksController(AlivelyDbContext context)
+        public TasksController(IMapper mapper, AlivelyDbContext context)
         {
+            _mapper = mapper;
+
             _context = context;
         }
 
-        // GET: Tasks
         public async Task<IActionResult> Index()
         {
-            return _context.Task != null ?
-                        View(await _context.Task.ToListAsync()) :
-                        Problem("Entity set 'AlivelyDbContext.Task'  is null.");
-        }
+            var currentSMARTGoal = _context.SMARTGoals.FirstOrDefault(goals => goals.UserUuid == Guid.Parse(HttpContext.Session.GetString("CurrentUserUuid")));
 
-        // GET: Tasks/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Task == null)
+            var taskViewModels = new List<TaskViewModel>();
+
+            if(currentSMARTGoal == null)
             {
-                return NotFound();
+                return View(taskViewModels);
             }
 
-            var task = await _context.Task
-                .FirstOrDefaultAsync(m => m.Id == id);
+            HttpContext.Session.SetString("CurrentSMARTGoalUuid", currentSMARTGoal.Uuid.ToString());
+
+            var tasks = await _context.Task.Where(tasks => tasks.SMARTGoal.Uuid == currentSMARTGoal.Uuid).ToListAsync().ConfigureAwait(false);
+
+            taskViewModels = _mapper.Map<List<Task>, List<TaskViewModel>>(tasks);
+
+            return View(taskViewModels);
+        }
+
+        public async Task<IActionResult> Details(Guid uuid)
+        {
+            if (uuid == Guid.Empty )
+            {
+                return BadRequest();
+            }
+
+            var task = await _context.Task.FirstOrDefaultAsync(tasks => tasks.Uuid == uuid);
 
             if (task == null)
             {
@@ -47,12 +65,15 @@ namespace AlivelyMVC.Controllers
             return View(task);
         }
 
-        // GET: Tasks/Create
-        public async Task<IActionResult> Create(SMARTGoal smartGoal)
+        public async Task<IActionResult> Create()
         {
-            smartGoal.Tasks = GetTasks(smartGoal.Id);
+            var smartGoal = await _context.SMARTGoals.FirstOrDefaultAsync(goals => goals.Uuid == Guid.Parse(HttpContext.Session.GetString("CurrentSMARTGoalUuid"))).ConfigureAwait(false);
 
-            var placeHolderTask = new Models.Task()
+            Guard.Against.Null(smartGoal, nameof(smartGoal), "SMART goal is missing.");
+
+            smartGoal.Tasks = GetTasks(smartGoal.Uuid);
+
+            var placeHolderTask = new TaskViewModel()
             {
                 SMARTGoal = smartGoal
             };
@@ -60,108 +81,99 @@ namespace AlivelyMVC.Controllers
             return View(placeHolderTask);
         }
 
-        // POST: Tasks/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Objective,Relevance,Value,Deadline,CreatedDate,Completed, SMARTGoal")] Models.Task createTask)
+        public async Task<IActionResult> Create(TaskViewModel taskViewModel)
         {
-            createTask.Id = 0;
+            var smartGoalUuid = Guid.Parse(HttpContext.Session.GetString("CurrentSMARTGoalUuid"));
 
-            var smartGoal = await _context.SMARTGoals.FirstOrDefaultAsync(goals => goals.Id == createTask.SMARTGoal.Id);
+            var smartGoal = await _context.SMARTGoals.FirstOrDefaultAsync(goals => goals.Uuid == smartGoalUuid);
 
-            createTask.SMARTGoal = smartGoal;
+            var task = _mapper.Map<Task>(taskViewModel);
 
-            var addedTask = _context.Task.Add(createTask);
+            task.Uuid = Guid.NewGuid();
+
+            task.SMARTGoal = smartGoal;
+
+            var addedTask = await _context.Task.AddAsync(task).ConfigureAwait(false);
 
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Task created successfully!";
 
-            return RedirectToAction(nameof(Create), addedTask.Entity.SMARTGoal);
+            return RedirectToAction(nameof(Create), _mapper.Map<SMARTGoal>(addedTask.Entity.SMARTGoal));
         }
 
-        // GET: Tasks/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(Guid uuid)
         {
-            if (id == null || _context.Task == null)
+            if(uuid == Guid.Empty)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var task = await _context.Task.FindAsync(id);
+            var task = await _context.Task.FirstOrDefaultAsync(tasks => tasks.Uuid == uuid).ConfigureAwait(false);
 
             if (task == null)
             {
                 return NotFound();
             }
 
-            return View(task);
+            return View(_mapper.Map<TaskViewModel>(task));
         }
 
-        // POST: Tasks/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Objective,Relevance,Value,Deadline,CreatedDate,Completed")] Models.Task task)
+        public async Task<IActionResult> Edit(Guid uuid, TaskViewModel taskViewModel)
         {
-            if (id != task.Id)
+            if (uuid != taskViewModel.Uuid)
             {
                 return NotFound();
             }
-            try
-            {
-                _context.Update(task);
 
-                await _context.SaveChangesAsync();
+            var task = await _context.Task.FirstOrDefaultAsync(tasks => tasks.Uuid == taskViewModel.Uuid).ConfigureAwait(false);
 
-                TempData["Success"] = "Task updated successfully!";
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TaskExists(task.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Guard.Against.Null(task, nameof(task), "Task not found. ");
+
+            _mapper.Map<TaskViewModel, Task>(taskViewModel, task);
+
+            _context.Update(task);
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Task updated successfully!";
+
             return RedirectToAction(nameof(Index));
         }
 
         // GET: Tasks/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(Guid uuid)
         {
-            if (id == null || _context.Task == null)
+            if (uuid == Guid.Empty)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var task = await _context.Task
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var task = await _context.Task.FirstOrDefaultAsync(m => m.Uuid == uuid);
 
             if (task == null)
             {
                 return NotFound();
             }
 
-            return View(task);
+            return View(_mapper.Map<TaskViewModel>(task));
         }
 
         // POST: Tasks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid uuid)
         {
-            if (_context.Task == null)
+            if(uuid == Guid.Empty)
             {
-                return Problem("Entity set 'AlivelyDbContext.Task'  is null.");
+                return BadRequest();
             }
-            var task = await _context.Task.FindAsync(id);
+
+            var task = await _context.Task.FirstOrDefaultAsync(tasks => tasks.Uuid == uuid).ConfigureAwait(false);
 
             if (task != null)
             {
@@ -175,14 +187,9 @@ namespace AlivelyMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TaskExists(int id)
+        public List<Models.Task> GetTasks(Guid smartGoalUuid)
         {
-            return (_context.Task?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-
-        public List<Models.Task> GetTasks(int smartGoalId)
-        {
-            return _context.Task.Where(tasks => tasks.SMARTGoal.Id == smartGoalId).ToList();
+            return _context.Task.Where(tasks => tasks.SMARTGoal.Uuid == smartGoalUuid).ToList();
         }
     }
 }

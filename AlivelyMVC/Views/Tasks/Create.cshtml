@@ -1,4 +1,4 @@
-﻿@model AlivelyMVC.Models.Task
+﻿@model AlivelyMVC.ViewModels.TaskViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -7,54 +7,53 @@
 <br />
 
 <div class="border p-3 mt-4">
-<div class="row pb-2">
-            <h2 class="text-primary">
-                Create Task
-            </h2>
-</div>
-
-
-
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        
-        <form method="post" asp-action="Create">
-            <input asp-for="SMARTGoal.Id" hidden/>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Objective" class="control-label"></label>
-                <input asp-for="Objective" class="form-control" />
-                <span asp-validation-for="Objective" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Relevance" class="control-label"></label>
-                <input asp-for="Relevance" class="form-control" />
-                <span asp-validation-for="Relevance" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Value" class="control-label"></label>
-                <input asp-for="Value" class="form-control" />
-                <span asp-validation-for="Value" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Deadline" class="control-label"></label>
-                <input type="date" asp-for="Deadline" class="form-control"/>
-                <span asp-validation-for="Deadline" class="text-danger"></span>
-            </div>
-            <br/>
-            <div class="form-group">
-                 <button type="submit" class="btn btn-primary" style="width: fit-content;"><i class="bi bi-plus-circle"></i> &nbsp; Create</button>
-                 <a class="btn btn-primary" asp-controller="Home" asp-action="Index" > &nbsp;Done</a>
-            </div>
-        </form>
+    <div class="row pb-2">
+        <h2 class="text-primary">
+            Create Task
+        </h2>
     </div>
-</div>
+
+
+
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+
+            <form method="post" asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Objective" class="control-label"></label>
+                    <input asp-for="Objective" class="form-control" />
+                    <span asp-validation-for="Objective" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Relevance" class="control-label"></label>
+                    <input asp-for="Relevance" class="form-control" />
+                    <span asp-validation-for="Relevance" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Value" class="control-label"></label>
+                    <input asp-for="Value" class="form-control" />
+                    <span asp-validation-for="Value" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="date" class="form-control" id="timebound-goal" asp-for="Deadline" >
+                    <span asp-validation-for="Deadline" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: fit-content;"><i class="bi bi-plus-circle"></i> &nbsp; Create</button>
+                    <a class="btn btn-primary" asp-controller="Home" asp-action="Dashboard"> &nbsp;Done</a>
+                    <small class="text-muted">You can always go back and edit it. </small>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 <div>
     <partial name="_TaskCarousel" model="@Model.SMARTGoal.Tasks" />

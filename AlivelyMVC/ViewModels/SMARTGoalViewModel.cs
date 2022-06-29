@@ -1,14 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using AlivelyMVC.Models;
+using Task = AlivelyMVC.Models.Task;
 
-namespace AlivelyMVC.Models
+namespace AlivelyMVC.ViewModels
 {
-    public class SMARTGoal
+    public class SMARTGoalViewModel
     {
-        [Key]
-        public int Id { get; set; }
-
-        public Guid Uuid { get; set; } = Guid.NewGuid();
+        public Guid Uuid { get; set; } 
 
         [Required]
         [Display(Name = "specify")]
@@ -30,7 +28,7 @@ namespace AlivelyMVC.Models
 
         [Required]
         [Display(Name = "target date")]
-        public DateTime AchieveDate { get; set; } = DateTime.Now;
+        public DateTime AchieveDate { get; set; }
 
         public List<Task>? Tasks { get; set; }
 

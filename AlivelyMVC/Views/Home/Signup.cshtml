@@ -1,0 +1,56 @@
+﻿@model AlivelyMVC.ViewModels.UserViewModel
+
+@{
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+<br />
+<div class="border p-3 mt-4">
+    <h1 class="text-primary">Sign Up</h1>
+    <form asp-action="Signup" asp-controller="Home" method="post" role="form">
+        <div class="form-group">
+            <label for="specific-goal" class="form-label mt-4">First Name:</label>
+            <input asp-for="FirstName" type="text" class="form-control" id="specific-goal" placeholder="Enter your first name...">
+        </div>
+        <div class="form-group">
+            <label for="specific-goal" class="form-label mt-4">Last Name:</label>
+            <input asp-for="LastName" type="text" class="form-control" id="specific-goal" placeholder="Enter your last name...">
+        </div>
+        <div class="form-group">
+            <label for="age" class="form-label mt-4">Age: </label>
+            <input asp-for="Age" class="form-control" id="age" />
+            <span asp-validation-for="Age" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="specific-goal" class="form-label mt-4">Email:</label>
+            <input asp-for="Email" type="text" class="form-control" id="specific-goal" placeholder="Enter a valid email address...">
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="specific-goal" class="form-label mt-4">Username:</label>
+            <input asp-for="UserName" type="text" class="form-control" id="specific-goal" placeholder="Enter your username...">
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="specific-goal" class="form-label mt-4">Password:</label>
+            <input asp-for="Password" type="password" class="form-control" id="specific-goal" placeholder="Enter your password...">
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="specific-goal" class="form-label mt-4">Confirm Password:</label>
+            <input asp-for="ConfirmPassword" type="password" class="form-control" id="specific-goal" placeholder="Re-enter your password...">
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary" style="width: fit-content; margin-left: 15px;">Sign up</button>
+    </form>
+</div>
+<br />
+<p>Already have an Account? <a class="nav-link link-primary" asp-controller="Home" asp-action="Index"> Login Now!</a></p>
+
+            @section Scripts
+    {
+    @{
+    <partial name="_ValidationScriptsPartial" />
+    }
+    }
