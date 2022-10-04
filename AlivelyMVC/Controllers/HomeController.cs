@@ -85,7 +85,7 @@ namespace AlivelyMVC.Controllers
         public async Task<IActionResult> Signup(UserViewModel userViewModel)
         {
             var user = _mapper.Map<User>(userViewModel);
-
+ 
             var httpResponseMessage = await _userService.SignupUserAsync(user).ConfigureAwait(false);
 
             if(!httpResponseMessage.IsSuccessStatusCode)

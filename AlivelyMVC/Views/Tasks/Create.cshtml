@@ -19,7 +19,7 @@
     <div class="row">
         <div class="col-md-4">
 
-            <form method="post" asp-action="Create">
+            <form method="post" asp-action="Create" >
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Title" class="control-label"></label>
@@ -42,6 +42,7 @@
                     <span asp-validation-for="Value" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="Deadline" class="control-label"></label>
                     <input type="date" class="form-control" id="timebound-goal" asp-for="Deadline" >
                     <span asp-validation-for="Deadline" class="text-danger"></span>
                 </div>
@@ -49,6 +50,7 @@
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary" style="width: fit-content;"><i class="bi bi-plus-circle"></i> &nbsp; Create</button>
                     <a class="btn btn-primary" asp-controller="Home" asp-action="Dashboard"> &nbsp;Done</a>
+                    <br />
                     <small class="text-muted">You can always go back and edit it. </small>
                 </div>
             </form>

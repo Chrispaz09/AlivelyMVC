@@ -1,4 +1,4 @@
-﻿@model List<SMARTGoal>
+﻿@model List<AlivelyMVC.ViewModels.SMARTGoalViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -38,18 +38,18 @@
                 </td>
                 <td>
                     <div class="w-75 btn-group" role="group">
-                        <a class="btn btn-primary" asp-controller="SMARTGoals" asp-action="Update" asp-route-id="@goal.Id"><i class="bi bi-pencil"></i> &nbsp; Edit</a>
+                        <a class="btn btn-primary" asp-controller="SMARTGoals" asp-action="Edit" asp-route-uuid="@goal.Uuid"><i class="bi bi-pencil"></i> &nbsp; Edit</a>
                     </div>
                 </td>
                 <td>
                     <div class="w-75 btn-group" role="group">
-                       <a class="btn btn-primary" asp-action="Details" asp-route-id="@goal.Id"><i class="bi bi-card-list"></i> &nbsp; Details</a> 
+                       <a class="btn btn-primary" asp-action="Details" asp-route-uuid="@goal.Uuid"><i class="bi bi-card-list"></i> &nbsp; Details</a> 
                     </div>
                 </td>
 
                 <td>
                     <div class="w-75 btn-group" role="group">
-                        <a class="btn btn-danger" type="submit" asp-controller="SMARTGoals" asp-action="Delete" asp-route-id="@goal.Id"  style="width: fit-content;" ><i class="bi bi-trash"></i> &nbsp; Delete </a>
+                        <a class="btn btn-danger" type="submit" asp-controller="SMARTGoals" asp-action="Delete" asp-route-uuid="@goal.Uuid"  style="width: fit-content;" ><i class="bi bi-trash"></i> &nbsp; Delete </a>
                     </div>
                 </td>
             </tr>

@@ -25,7 +25,7 @@ namespace AlivelyMVC.Controllers
         {
             var goalList = _alivelyDbContext.SMARTGoals.Where(users => users.UserUuid == Guid.Parse(HttpContext.Session.GetString("CurrentUserUuid"))).ToList();
 
-            return View(goalList);
+            return View(_mapper.Map<List<SMARTGoalViewModel>>(goalList));
         }
 
         public IActionResult Create()
@@ -54,67 +54,84 @@ namespace AlivelyMVC.Controllers
             return RedirectToAction("Create", "Tasks");
         }
 
-        public IActionResult Update(int id)
+        public IActionResult Edit(Guid uuid)
         {
-            if(id == 0)
+            if(uuid == Guid.Empty)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var goalFromDatabase = _alivelyDbContext.SMARTGoals.FirstOrDefault(goals => goals.Id == id);
+            var goalFromDatabase = _alivelyDbContext.SMARTGoals.FirstOrDefault(goals => goals.Uuid == uuid);
 
-            return View(goalFromDatabase);
+            return View(_mapper.Map<SMARTGoalViewModel>(goalFromDatabase));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(SMARTGoal smartGoal)
+        public async Task<IActionResult> Edit(SMARTGoalViewModel smartGoalViewModel)
         {
             if (ModelState.IsValid)
             {
-                _alivelyDbContext.SMARTGoals.Update(smartGoal);
+
+                var smartGoal = await _alivelyDbContext.SMARTGoals.FirstOrDefaultAsync(goals => goals.Uuid == smartGoalViewModel.Uuid).ConfigureAwait(false);
+
+                if(smartGoal is null)
+                {
+                    return NotFound();
+                }
+
+                smartGoal = _mapper.Map<SMARTGoalViewModel, SMARTGoal>(smartGoalViewModel, smartGoal);
+
+                var smartGoalViewModelAdded = _alivelyDbContext.SMARTGoals.Update(smartGoal);
 
                 await _alivelyDbContext.SaveChangesAsync();
 
                 TempData["Success"] = "SMART Goal updated successfully!";
 
-                HttpContext.Session.SetString("CurrentUserUuid", smartGoal.UserUuid.ToString());
+                HttpContext.Session.SetString("CurrentUserUuid", smartGoalViewModel.UserUuid.ToString());
 
                 return RedirectToAction("Index");   
             }
 
-            return View(smartGoal);
+            TempData["Error"] = "There was an error when attempting to update your SMART goal. If the error persists, contact support.";
+
+            return View(smartGoalViewModel);
         }
 
-        public IActionResult Delete(int id)
+        public IActionResult Delete(Guid uuid)
         {
-            if (id == 0)
+            if (uuid == Guid.Empty)
+            {
+                return BadRequest();
+            }
+
+            var goalFromDatabase = _alivelyDbContext.SMARTGoals.FirstOrDefault(goals => goals.Uuid == uuid);
+
+            if(goalFromDatabase is null)
             {
                 return NotFound();
             }
 
-            var goalFromDatabase = _alivelyDbContext.SMARTGoals.FirstOrDefault(goals => goals.Id == id);
-
-            return View(goalFromDatabase);
+            return View(_mapper.Map<SMARTGoalViewModel>(goalFromDatabase));
         }
 
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePOST(int id)
+        public async Task<IActionResult> DeletePOST(Guid uuid)
         {
-            if (id == 0)
+            if (uuid == Guid.Empty)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var goalFromDatabase = _alivelyDbContext.SMARTGoals.FirstOrDefault(goals => goals.Id == id);
+            var goalFromDatabase = _alivelyDbContext.SMARTGoals.FirstOrDefault(goals => goals.Uuid == uuid);
 
-            var tasks = GetTasks(id);
+            var tasks = GetTasks(uuid);
 
             if(tasks.Any())
             {
-                _alivelyDbContext.Task.RemoveRange(GetTasks(id));
+                _alivelyDbContext.Task.RemoveRange(GetTasks(uuid));
             }
 
             if (goalFromDatabase is not null)
@@ -125,32 +142,33 @@ namespace AlivelyMVC.Controllers
 
                 return RedirectToAction("Index");
             }
+
             return NotFound();
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(Guid uuid)
         {
-            if (id == null || _alivelyDbContext.SMARTGoals == null)
+            if (uuid == Guid.Empty)
+            {
+                return BadRequest();
+            }
+
+            var goal = await _alivelyDbContext.SMARTGoals
+                .FirstOrDefaultAsync(m => m.Uuid == uuid);
+
+            if (goal == null)
             {
                 return NotFound();
             }
 
-            var goals = await _alivelyDbContext.SMARTGoals
-                .FirstOrDefaultAsync(m => m.Id == id);
+            goal.Tasks = GetTasks(uuid);
 
-            if (goals == null)
-            {
-                return NotFound();
-            }
-
-            goals.Tasks = GetTasks(id);
-
-            return View(goals);
+            return View(_mapper.Map<SMARTGoalViewModel>(goal));
         }
 
-        public List<Models.Task> GetTasks(int smartGoalId)
+        public List<Models.Task> GetTasks(Guid smartGoalUuid)
         {
-            return _alivelyDbContext.Task.Where(tasks => tasks.SMARTGoal.Id == smartGoalId).ToList();
+            return _alivelyDbContext.Task.Where(tasks => tasks.SMARTGoal.Uuid == smartGoalUuid).ToList();
         }
     }
 }
